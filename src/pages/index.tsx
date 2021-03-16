@@ -1,6 +1,7 @@
 import React from "react";
 import { Helmet } from "react-helmet";
 import Layout from "../components/addOns/Layout";
+import { Landing } from "../components/landing/Landing";
 
 export default function Home() {
   return (
@@ -9,7 +10,9 @@ export default function Home() {
         <title>Bookmarker | Home</title>
       </Helmet>
       <div>
-        <Layout>Home Page</Layout>
+        <Layout>
+          <Landing />
+        </Layout>
       </div>
     </div>
   );
