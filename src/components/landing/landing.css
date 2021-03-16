@@ -22,3 +22,8 @@
 .homeTitle {
   color: rgb(255, 60, 0);
 }
+.btnsDiv {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
