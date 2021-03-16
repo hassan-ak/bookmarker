@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useEffect } from "react";
+import netlifyIdentity from "netlify-identity-widget";
 import { navigate } from "gatsby";
 import { StaticImage } from "gatsby-plugin-image";
 import { makeStyles } from "@material-ui/core/styles";
@@ -27,6 +28,9 @@ const useStyles = makeStyles((theme) => ({
 
 export const Landing = () => {
   const classes = useStyles();
+  useEffect(() => {
+    netlifyIdentity.init({});
+  });
   return (
     <div className='homeContainer'>
       <Grid container className={classes.mainGrid}>
@@ -75,7 +79,7 @@ export const Landing = () => {
               variant='contained'
               className={classes.bookmarksButton}
               onClick={() => {
-                alert("clicked");
+                netlifyIdentity.open();
               }}
             >
               Sign In
