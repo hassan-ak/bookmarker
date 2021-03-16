@@ -1,0 +1,24 @@
+.errorContainer {
+  min-height: 78vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.errorImage {
+  width: 90%;
+  border-radius: 50px;
+}
+.errorContent {
+  color: black;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.errorDetail {
+  text-align: justify;
+  text-justify: inter-word;
+}
+.errorTitle {
+  color: rgb(255, 60, 0);
+}
