@@ -1,0 +1,24 @@
+.aloContainer {
+  min-height: 78vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.aloImage {
+  width: 90%;
+  border-radius: 50px;
+}
+.aloContent {
+  color: black;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.aloDetail {
+  text-align: justify;
+  text-justify: inter-word;
+}
+.aloTitle {
+  color: rgb(255, 60, 0);
+}
