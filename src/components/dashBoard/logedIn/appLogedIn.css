@@ -33,3 +33,64 @@
   border-radius: 300px;
   padding: 10px 0px;
 }
+
+.taskScreen {
+  background-color: white;
+  border-radius: 5px;
+  padding: 5px;
+  min-height: 38vh;
+  margin: 20px 0 20px;
+}
+.taskScreenE {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.taskScreen p {
+  color: rgb(255, 60, 0);
+  font-size: 50px;
+}
+
+@media (max-width: 480px) {
+  .taskScreen p {
+    font-size: 30px;
+  }
+}
+.bookmarkScreen {
+  min-height: 38vh;
+}
+
+.bookMarksContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.bookmarkGrid {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.bookmarkCard {
+  margin: 0.5% 0.5% !important;
+  justify-content: center;
+  align-items: center;
+  border: 2px solid rgb(255, 60, 0);
+}
+.bookmarkName {
+  height: 40px;
+  color: #000000;
+}
+.viewDiv {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+.editdeleteButtons {
+  margin-top: 20px;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+}
