@@ -37,6 +37,13 @@ const ADD_BOOKMARK = gql`
     }
   }
 `;
+const UPDATE_BOOKMARK = gql`
+  mutation updateBookmark($id: String!, $desc: String!, $url: String!) {
+    updateBookmark(id: $id, desc: $desc, url: $url) {
+      id
+    }
+  }
+`;
 
 // Type Defination
 interface BookmarkProps {
@@ -86,10 +93,8 @@ export const AppLogedIn = () => {
   const [addBookmark] = useMutation(ADD_BOOKMARK);
   const { loading, error, data, refetch } = useQuery(GET_BOOKMARKS);
   const [deleteBookmark] = useMutation(DELETE_BOOKMARK);
-  // useEffect(() => {
-  //   window.location.reload();
-  // }, [1]);
-  // Edited Values
+  const [updateBookmark] = useMutation(UPDATE_BOOKMARK);
+
   const initialValuesEditing: BookmarkProps = {
     desc: editingDesc,
     url: editingUrl,
@@ -260,10 +265,17 @@ export const AppLogedIn = () => {
                             )
                             .required("Enter url"),
                         })}
-                        onSubmit={(values, onSubmitProps) => {
+                        onSubmit={async (values, onSubmitProps) => {
+                          await updateBookmark({
+                            variables: {
+                              id: editingId,
+                              desc: values.desc,
+                              url: values.url,
+                            },
+                          });
+                          await refetch();
                           onSubmitProps.resetForm();
                           setEditing(false);
-                          console.log(values);
                         }}
                       >
                         <Form className='formControl1'>

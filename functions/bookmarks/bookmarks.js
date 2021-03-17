@@ -18,6 +18,7 @@ const typeDefs = gql`
   type Mutation {
     addBookmark(desc: String!, url: String!): Bookmark
     deleteBookmark(id: String!): Bookmark
+    updateBookmark(id: String!, desc: String!, url: String!): Bookmark
   }
 `;
 
@@ -45,6 +46,24 @@ const resolvers = {
       }
       const results = await client.query(
         q.Create(q.Collection("bookmarks"), {
+          data: {
+            desc,
+            url,
+            owner: user,
+          },
+        })
+      );
+      return {
+        ...results.data,
+        id: results.ref.id,
+      };
+    },
+    updateBookmark: async (_, { desc, url, id }, { user }) => {
+      if (!user) {
+        throw new Error("Must be authenticated to insert todos");
+      }
+      const results = await client.query(
+        q.Update(q.Ref(q.Collection("bookmarks"), id), {
           data: {
             desc,
             url,
