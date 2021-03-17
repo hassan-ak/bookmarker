@@ -11,7 +11,6 @@ import DeleteForeverIcon from "@material-ui/icons/DeleteForever";
 import EditIcon from "@material-ui/icons/Edit";
 import { makeStyles } from "@material-ui/core/styles";
 import SaveIcon from "@material-ui/icons/Save";
-import { Link } from "gatsby";
 import { gql, useMutation, useQuery } from "@apollo/client";
 
 const GET_BOOKMARKS = gql`
@@ -57,20 +56,6 @@ const initialValues: BookmarkProps = {
   url: "",
 };
 
-const bookmarksReducer = (state, action) => {
-  switch (action.type) {
-    case "addBookmark":
-      return [
-        {
-          id: Math.floor(Math.random() * 100000000000000).toString(),
-          desc: action.payload.desc,
-          url: action.payload.url,
-        },
-        ...state,
-      ];
-  }
-};
-
 const useStyles = makeStyles((theme) => ({
   viewButton: {
     background: "rgb(255, 60, 0)",
@@ -85,7 +70,6 @@ const useStyles = makeStyles((theme) => ({
 export const AppLogedIn = () => {
   //  useStyles
   const classes = useStyles();
-  const [bookmarks, dispatch] = useReducer(bookmarksReducer, []);
   const [editing, setEditing] = useState(false);
   const [editingId, setEditingId] = useState("");
   const [editingDesc, setEditingDesc] = useState("");
@@ -208,8 +192,8 @@ export const AppLogedIn = () => {
                         <strong>{bookmark.desc}</strong>
                       </h3>
                       <div className='viewDiv'>
-                        <Link
-                          to={`${bookmark.url}`}
+                        <a
+                          href={`${bookmark.url}`}
                           target='_blank'
                           className='link'
                         >
@@ -221,7 +205,7 @@ export const AppLogedIn = () => {
                           >
                             Visit
                           </Button>
-                        </Link>
+                        </a>
                       </div>
                       <div className='editdeleteButtons'>
                         {console.log(bookmark.id)}
