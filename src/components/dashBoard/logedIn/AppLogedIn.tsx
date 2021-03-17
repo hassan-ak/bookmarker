@@ -12,6 +12,15 @@ import EditIcon from "@material-ui/icons/Edit";
 import { makeStyles } from "@material-ui/core/styles";
 import SaveIcon from "@material-ui/icons/Save";
 import { Link } from "gatsby";
+import { gql, useMutation, useQuery } from "@apollo/client";
+
+const ADD_BOOKMARK = gql`
+  mutation AddBookmark($desc: String!, $url: String!) {
+    addBookmark(desc: $desc, url: $url) {
+      id
+    }
+  }
+`;
 
 // Type Defination
 interface BookmarkProps {
@@ -58,6 +67,7 @@ export const AppLogedIn = () => {
   const [editingId, setEditingId] = useState("");
   const [editingDesc, setEditingDesc] = useState("");
   const [editingUrl, setEditingUrl] = useState("");
+  const [addBookmark] = useMutation(ADD_BOOKMARK);
   // Edited Values
   const initialValuesEditing: BookmarkProps = {
     desc: editingDesc,
@@ -84,9 +94,12 @@ export const AppLogedIn = () => {
               )
               .required("Enter url"),
           })}
-          onSubmit={(values, onSubmitProps) => {
-            dispatch({ type: "addBookmark", payload: values });
+          onSubmit={async (values, onSubmitProps) => {
+            await addBookmark({
+              variables: { desc: values.desc, url: values.url },
+            });
             onSubmitProps.resetForm();
+            // await refetch();
           }}
         >
           <Form className='formControl1'>

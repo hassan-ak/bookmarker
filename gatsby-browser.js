@@ -7,10 +7,25 @@ import {
   HttpLink,
   InMemoryCache,
 } from "@apollo/client";
+import netlifyIdentity from "netlify-identity-widget";
+import { setContext } from "apollo-link-context";
+const authLink = setContext((_, { headers }) => {
+  const user = netlifyIdentity.currentUser();
+  const token = user.token.access_token;
+  // return the headers to the context so httpLink can read them
+  return {
+    headers: {
+      ...headers,
+      Authorization: token ? `Bearer ${token}` : "",
+    },
+  };
+});
+
+const httpLink = new HttpLink({
+  uri: "/.netlify/functions/bookmarks",
+});
 const client = new ApolloClient({
-  link: new HttpLink({
-    uri: "http://localhost:8888/.netlify/functions/bookmarks",
-  }),
+  link: authLink.concat(httpLink),
   cache: new InMemoryCache(),
 });
 
