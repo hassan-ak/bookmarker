@@ -1,4 +1,4 @@
-import React, { useReducer, useState } from "react";
+import React, { useReducer, useState, useEffect } from "react";
 import { AppHead } from "../addOns/AppHead";
 import { Formik, Field, Form, ErrorMessage } from "formik";
 import * as Yup from "yup";
@@ -14,6 +14,15 @@ import SaveIcon from "@material-ui/icons/Save";
 import { Link } from "gatsby";
 import { gql, useMutation, useQuery } from "@apollo/client";
 
+const GET_BOOKMARKS = gql`
+  query GetBookmarks {
+    bookmarks {
+      id
+      desc
+      url
+    }
+  }
+`;
 const ADD_BOOKMARK = gql`
   mutation AddBookmark($desc: String!, $url: String!) {
     addBookmark(desc: $desc, url: $url) {
@@ -68,6 +77,10 @@ export const AppLogedIn = () => {
   const [editingDesc, setEditingDesc] = useState("");
   const [editingUrl, setEditingUrl] = useState("");
   const [addBookmark] = useMutation(ADD_BOOKMARK);
+  const { loading, error, data, refetch } = useQuery(GET_BOOKMARKS);
+  // useEffect(() => {
+  //   window.location.reload();
+  // }, [1]);
   // Edited Values
   const initialValuesEditing: BookmarkProps = {
     desc: editingDesc,
@@ -99,7 +112,7 @@ export const AppLogedIn = () => {
               variables: { desc: values.desc, url: values.url },
             });
             onSubmitProps.resetForm();
-            // await refetch();
+            await refetch();
           }}
         >
           <Form className='formControl1'>
@@ -151,7 +164,15 @@ export const AppLogedIn = () => {
       {/* Display Portion */}
       {/* ****** */}
       {/* ****** */}
-      {bookmarks.length === 0 ? (
+      {loading ? (
+        <div className='taskScreen taskScreenE'>
+          <p>Loading...</p>
+        </div>
+      ) : !data ? (
+        <div className='taskScreen taskScreenE'>
+          <p>No Saved Bookmarks</p>
+        </div>
+      ) : data.bookmarks.length === 0 ? (
         <div className='taskScreen taskScreenE'>
           <p>No Saved Bookmarks</p>
         </div>
@@ -159,7 +180,7 @@ export const AppLogedIn = () => {
         <div className='bookmarkScreen'>
           <div className='bookMarksContainer'>
             <Grid container className='bookmarkGrid'>
-              {bookmarks.map((bookmark, i) => (
+              {data.bookmarks.map((bookmark, i) => (
                 <Grid
                   key={i}
                   item
@@ -292,6 +313,13 @@ export const AppLogedIn = () => {
           </div>
         </div>
       )}
+      {error ? (
+        <div className='taskScreen taskScreenE'>
+          <p>Some error occurred.</p>
+          <p>Come Back Later.</p>
+        </div>
+      ) : null}
+      {}
       {/* ****** */}
       {/* ****** */}
     </div>

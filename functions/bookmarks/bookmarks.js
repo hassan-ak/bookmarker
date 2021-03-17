@@ -21,6 +21,22 @@ const typeDefs = gql`
 `;
 
 const resolvers = {
+  Query: {
+    bookmarks: async (parent, args, { user }) => {
+      if (!user) {
+        return [];
+      } else {
+        const results = await client.query(
+          q.Paginate(q.Match(q.Index("bookmarks_by_user"), user))
+        );
+        return results.data.map(([ref, desc, url]) => ({
+          id: ref.id,
+          desc,
+          url,
+        }));
+      }
+    },
+  },
   Mutation: {
     addBookmark: async (_, { desc, url }, { user }) => {
       if (!user) {
