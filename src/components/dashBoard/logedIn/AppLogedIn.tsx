@@ -1,4 +1,4 @@
-import React, { useReducer } from "react";
+import React, { useReducer, useState } from "react";
 import { AppHead } from "../addOns/AppHead";
 import { Formik, Field, Form, ErrorMessage } from "formik";
 import * as Yup from "yup";
@@ -10,6 +10,8 @@ import { Card, CardContent } from "@material-ui/core";
 import DeleteForeverIcon from "@material-ui/icons/DeleteForever";
 import EditIcon from "@material-ui/icons/Edit";
 import { makeStyles } from "@material-ui/core/styles";
+import SaveIcon from "@material-ui/icons/Save";
+import { Link } from "gatsby";
 
 // Type Defination
 interface BookmarkProps {
@@ -28,7 +30,7 @@ const bookmarksReducer = (state, action) => {
     case "addBookmark":
       return [
         {
-          id: Math.floor(Math.random() * 100000000000000),
+          id: Math.floor(Math.random() * 100000000000000).toString(),
           desc: action.payload.desc,
           url: action.payload.url,
         },
@@ -52,7 +54,15 @@ export const AppLogedIn = () => {
   //  useStyles
   const classes = useStyles();
   const [bookmarks, dispatch] = useReducer(bookmarksReducer, []);
-  console.log("from reducer", bookmarks);
+  const [editing, setEditing] = useState(false);
+  const [editingId, setEditingId] = useState("");
+  const [editingDesc, setEditingDesc] = useState("");
+  const [editingUrl, setEditingUrl] = useState("");
+  // Edited Values
+  const initialValuesEditing: BookmarkProps = {
+    desc: editingDesc,
+    url: editingUrl,
+  };
   return (
     <div>
       <AppHead />
@@ -64,15 +74,15 @@ export const AppLogedIn = () => {
           initialValues={initialValues}
           validationSchema={Yup.object({
             desc: Yup.string()
-              .min(3, "Must be 3 characters or more")
-              .max(25, "Must be 25 characters or less")
-              .required("Kindly add Description"),
+              .min(3, "Atleast 3 letters")
+              .max(25, "Atmost 25 letters")
+              .required("Add Title"),
             url: Yup.string()
               .matches(
                 /[(http(s)?):\/\/(www\.)?a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/,
                 "Enter correct url!"
               )
-              .required("Please enter website"),
+              .required("Enter url"),
           })}
           onSubmit={(values, onSubmitProps) => {
             dispatch({ type: "addBookmark", payload: values });
@@ -87,7 +97,7 @@ export const AppLogedIn = () => {
                 variant='outlined'
                 className='fields'
                 name='desc'
-                label='Description'
+                label='Title'
                 helperText={
                   <ErrorMessage name='desc'>
                     {(msg) => <span className='error'>{msg}</span>}
@@ -141,46 +151,128 @@ export const AppLogedIn = () => {
                   key={i}
                   item
                   xs={8}
-                  md={2}
+                  md={3}
                   component={Card}
                   className='bookmarkCard'
                 >
-                  <CardContent>
-                    <h3 className='bookmarkName'>
-                      <strong>{bookmark.desc}</strong>
-                    </h3>
-                    <div className='viewDiv'>
-                      <Button
-                        variant='contained'
-                        focusRipple
-                        className={classes.viewButton}
-                        aria-label='visit'
-                        onClick={() => {
-                          alert("view");
+                  {!editing || editingId !== bookmark.id ? (
+                    <CardContent>
+                      <h3 className='bookmarkName'>
+                        <strong>{bookmark.desc}</strong>
+                      </h3>
+                      <div className='viewDiv'>
+                        <Link
+                          to={`${bookmark.url}`}
+                          target='_blank'
+                          className='link'
+                        >
+                          <Button
+                            variant='contained'
+                            focusRipple
+                            className={classes.viewButton}
+                            aria-label='visit'
+                          >
+                            Visit
+                          </Button>
+                        </Link>
+                      </div>
+                      <div className='editdeleteButtons'>
+                        <Button
+                          aria-label='delete'
+                          onClick={() => {
+                            alert("delete");
+                          }}
+                        >
+                          <DeleteForeverIcon style={{ color: "red" }} />
+                        </Button>
+                        <Button
+                          aria-label='Edit'
+                          onClick={() => {
+                            setEditingId(bookmark.id);
+                            setEditingDesc(bookmark.desc);
+                            setEditingUrl(bookmark.url);
+                            setEditing(true);
+                          }}
+                        >
+                          <EditIcon style={{ color: "blue" }} />
+                        </Button>
+                      </div>
+                    </CardContent>
+                  ) : (
+                    <div className='formm'>
+                      <Formik
+                        initialValues={initialValuesEditing}
+                        validationSchema={Yup.object({
+                          desc: Yup.string()
+                            .min(3, "Too Short")
+                            .max(25, "Too Long")
+                            .required("Enter Title"),
+                          url: Yup.string()
+                            .matches(
+                              /[(http(s)?):\/\/(www\.)?a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/,
+                              "Correct url!"
+                            )
+                            .required("Enter url"),
+                        })}
+                        onSubmit={(values, onSubmitProps) => {
+                          onSubmitProps.resetForm();
+                          setEditing(false);
+                          console.log(values);
                         }}
                       >
-                        Visit
-                      </Button>
+                        <Form className='formControl1'>
+                          <div className='fieldsDiv2'>
+                            <Field
+                              as={TextField}
+                              required
+                              variant='outlined'
+                              className='fields'
+                              name='desc'
+                              label='Title'
+                              helperText={
+                                <ErrorMessage name='desc'>
+                                  {(msg) => (
+                                    <span className='error errorEdit'>
+                                      {msg}
+                                    </span>
+                                  )}
+                                </ErrorMessage>
+                              }
+                            />
+                          </div>
+                          <div className='fieldsDiv2'>
+                            <Field
+                              as={TextField}
+                              required
+                              variant='outlined'
+                              className='fields'
+                              name='url'
+                              label='URL'
+                              helperText={
+                                <ErrorMessage name='url'>
+                                  {(msg) => (
+                                    <span className='error errorEdit'>
+                                      {msg}
+                                    </span>
+                                  )}
+                                </ErrorMessage>
+                              }
+                            />
+                          </div>
+                          <div className='btnDivF'>
+                            <Button
+                              style={{ color: "white" }}
+                              variant='contained'
+                              className='green'
+                              type='submit'
+                            >
+                              <SaveIcon />
+                            </Button>
+                          </div>
+                        </Form>
+                      </Formik>
                     </div>
-                    <div className='editdeleteButtons'>
-                      <Button
-                        aria-label='delete'
-                        onClick={() => {
-                          alert("delete");
-                        }}
-                      >
-                        <DeleteForeverIcon style={{ color: "red" }} />
-                      </Button>
-                      <Button
-                        aria-label='Edit'
-                        onClick={() => {
-                          alert("edit");
-                        }}
-                      >
-                        <EditIcon style={{ color: "blue" }} />
-                      </Button>
-                    </div>
-                  </CardContent>
+                  )}
                 </Grid>
               ))}
             </Grid>
