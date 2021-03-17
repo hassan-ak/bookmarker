@@ -23,6 +23,13 @@ const GET_BOOKMARKS = gql`
     }
   }
 `;
+const DELETE_BOOKMARK = gql`
+  mutation deleteBookmark($id: String!) {
+    deleteBookmark(id: $id) {
+      id
+    }
+  }
+`;
 const ADD_BOOKMARK = gql`
   mutation AddBookmark($desc: String!, $url: String!) {
     addBookmark(desc: $desc, url: $url) {
@@ -78,6 +85,7 @@ export const AppLogedIn = () => {
   const [editingUrl, setEditingUrl] = useState("");
   const [addBookmark] = useMutation(ADD_BOOKMARK);
   const { loading, error, data, refetch } = useQuery(GET_BOOKMARKS);
+  const [deleteBookmark] = useMutation(DELETE_BOOKMARK);
   // useEffect(() => {
   //   window.location.reload();
   // }, [1]);
@@ -211,10 +219,14 @@ export const AppLogedIn = () => {
                         </Link>
                       </div>
                       <div className='editdeleteButtons'>
+                        {console.log(bookmark.id)}
                         <Button
                           aria-label='delete'
-                          onClick={() => {
-                            alert("delete");
+                          onClick={async () => {
+                            await deleteBookmark({
+                              variables: { id: bookmark.id },
+                            });
+                            await refetch();
                           }}
                         >
                           <DeleteForeverIcon style={{ color: "red" }} />

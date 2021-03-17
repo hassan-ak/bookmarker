@@ -17,6 +17,7 @@ const typeDefs = gql`
   }
   type Mutation {
     addBookmark(desc: String!, url: String!): Bookmark
+    deleteBookmark(id: String!): Bookmark
   }
 `;
 
@@ -50,6 +51,18 @@ const resolvers = {
             owner: user,
           },
         })
+      );
+      return {
+        ...results.data,
+        id: results.ref.id,
+      };
+    },
+    deleteBookmark: async (_, { id }, { user }) => {
+      if (!user) {
+        throw new Error("Must be authenticated to delete todos");
+      }
+      const results = await client.query(
+        q.Delete(q.Ref(q.Collection("bookmarks"), id))
       );
       return {
         ...results.data,
