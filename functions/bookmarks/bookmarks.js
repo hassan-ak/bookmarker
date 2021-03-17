@@ -2,13 +2,33 @@ const { ApolloServer, gql } = require("apollo-server-lambda");
 
 const typeDefs = gql`
   type Query {
-    hello: String
+    bookmarks: [Bookmark]!
+  }
+  type Bookmark {
+    id: ID!
+    desc: String!
+    url: String!
+  }
+  type Mutation {
+    addBookmark(desc: String!, url: String!): Bookmark
   }
 `;
 
+const bookmarks = {};
+let bookmarkIndex = 0;
 const resolvers = {
   Query: {
-    hello: () => "Hello, world!",
+    bookmarks: () => {
+      return Object.values(bookmarks);
+    },
+  },
+  Mutation: {
+    addBookmark: (_, { desc, url }) => {
+      bookmarkIndex++;
+      const id = `key-${bookmarkIndex}`;
+      bookmarks[id] = { id, desc, url };
+      return bookmarks[id];
+    },
   },
 };
 
